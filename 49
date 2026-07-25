@@ -1,0 +1,25 @@
+class Solution {
+    public int[] singleNumber(int[] nums) {
+        // Step 1: XOR all numbers together
+        int xorResult = 0;
+        for (int num : nums) {
+            xorResult ^= num;
+        }
+        
+        // Step 2: Isolate the rightmost set bit (differentiating bit)
+        // Using bitwise AND with its negative prevents integer overflow issues
+        int lowestSetBit = xorResult & -xorResult;
+        
+        // Step 3: Divide numbers into two groups and XOR them separately
+        int[] result = new int[2];
+        for (int num : nums) {
+            if ((num & lowestSetBit) == 0) {
+                result[0] ^= num; // Group where the differentiating bit is 0
+            } else {
+                result[1] ^= num; // Group where the differentiating bit is 1
+            }
+        }
+        
+        return result;
+    }
+}
