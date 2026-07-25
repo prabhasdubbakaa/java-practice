@@ -1,0 +1,14 @@
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        // If both p and q are greater than root, LCA is in the right subtree
+        if (root.val < Math.min(p.val, q.val)) {
+            return lowestCommonAncestor(root.right, p, q);
+        }
+        // If both p and q are smaller than root, LCA is in the left subtree
+        if (root.val > Math.max(p.val, q.val)) {
+            return lowestCommonAncestor(root.left, p, q);
+        }
+        // We found the split point, which is the LCA
+        return root;
+    }
+}
