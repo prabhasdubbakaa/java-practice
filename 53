@@ -1,0 +1,86 @@
+import java.util.Arrays;
+
+class Solution {
+    // k <= 10^6, so any calculated permutation count above 1,000,001 can be capped
+    private static final long MAX = 1_000_001L; 
+
+    public String smallestPalindrome(String s, int k) {
+        int n = s.length();
+        int[] freq = new int[26];
+        
+        // Count total frequencies of characters
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']++;
+        }
+        
+        // Extract the required character counts for the left half
+        int[] leftFreq = new int[26];
+        int leftLen = n / 2;
+        char midChar = 0;
+        
+        for (int i = 0; i < 26; i++) {
+            leftFreq[i] = freq[i] / 2;
+            if (freq[i] % 2 == 1) {
+                midChar = (char) ('a' + i);
+            }
+        }
+        
+        // Verify if total unique permutations are sufficient for k
+        if (countPermutations(leftFreq, leftLen) < k) {
+            return "";
+        }
+        
+        // Build the left half character by character greedily
+        StringBuilder leftHalf = new StringBuilder();
+        long currentK = k;
+        
+        for (int pos = 0; pos < leftLen; pos++) {
+            for (int i = 0; i < 26; i++) {
+                if (leftFreq[i] == 0) continue;
+                
+                // Try choosing character i at the current position
+                leftFreq[i]--;
+                long ways = countPermutations(leftFreq, leftLen - 1 - pos);
+                
+                if (currentK <= ways) {
+                    // Character i is the correct choice
+                    leftHalf.append((char) ('a' + i));
+                    break;
+                } else {
+                    // Skip all permutations starting with character i
+                    currentK -= ways;
+                    leftFreq[i]++; // Backtrack
+                }
+            }
+        }
+        
+        // Construct the full palindromic string
+        String leftStr = leftHalf.toString();
+        String rightStr = new StringBuilder(leftStr).reverse().toString();
+        
+        if (n % 2 == 1) {
+            return leftStr + midChar + rightStr;
+        } else {
+            return leftStr + rightStr;
+        }
+    }
+    
+    // Calculates unique permutations of a multiset: total! / (n1! * n2! * ...)
+    private long countPermutations(int[] freq, int totalRemaining) {
+        long ways = 1;
+        int currentTotal = 0;
+        
+        for (int count : freq) {
+            if (count == 0) continue;
+            for (int j = 1; j <= count; j++) {
+                currentTotal++;
+                // Multiply sequentially and divide to manage values safely without overflow
+                ways = ways * currentTotal / j;
+                if (ways > MAX) {
+                    ways = MAX;
+                }
+            }
+        }
+        return ways;
+    }
+}
