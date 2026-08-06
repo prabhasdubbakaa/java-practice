@@ -1,0 +1,19 @@
+package Javalab;
+import java.util.Scanner;
+public class VoteEligibity {
+
+	public static void main(String[] args) {
+		
+Scanner obj1 = new Scanner(System.in);
+System.out.println("enter age");
+int age = obj1.nextInt();
+if((age >= 18) && (age <= 100)){
+	System.out.println("eligible to vote");
+}
+else {
+	System.out.println("not eligible");
+	
+}
+	}
+
+}
